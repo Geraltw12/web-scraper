@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .scraper-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .export-options {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="scraper-container">
+        <h1>Web Scraper</h1>
+        
+        <div class="input-group">
+            <label for="website-url">Enter Website URL:</label>
+            <input type="text" id="website-url" placeholder="https://example.com">
+        </div>
+        
+        <div class="input-group">
+            <label for="category">Select Category:</label>
+            <select id="category">
+                <option value="all">All</option>
+                <option value="news">News</option>
+                <option value="ecommerce">E-commerce</option>
+                <option value="academic">Academic</option>
+                <option value="business">Business</option>
+                <option value="blog">Blog</option>
+                <option value="portfolio">Portfolio</option>
+                <option value="wiki">Wiki/Database</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="keyword-filter">Keyword Filter:</label>
+            <input type="text" id="keyword-filter" placeholder="Filter results by keyword">
+        </div>
+        
+        <div class="button-group">
+            <button id="start-scraping">Start Scraping</button>
+        </div>
+        
+        <table id="results-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Link</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will appear here -->
+            </tbody>
+        </table>
+        
+        <div class="export-options">
+            <button id="export-json">Export as JSON</button>
+            <button id="export-excel">Export as Excel</button>
+            <button id="settings">Settings</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('start-scraping').addEventListener('click', async () => {
+            const url = document.getElementById('website-url').value;
+            const category = document.getElementById('category').value;
+            const keyword = document.getElementById('keyword-filter').value;
+            
+            if (!url) {
+                alert('Please enter a website URL');
+                return;
+            }
+            
+            // Show loading state
+            const scrapeBtn = document.getElementById('start-scraping');
+            scrapeBtn.textContent = 'Scraping...';
+            scrapeBtn.disabled = true;
+            
+            try {
+                // Send request to backend
+                const response = await fetch('/scrape', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url, category, keyword })
+                });
+                
+                const data = await response.json();
+                
+                // Populate table
+                const tbody = document.querySelector('#results-table tbody');
+                tbody.innerHTML = '';
+                
+                data.results.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.title || ''}</td>
+                        <td><a href="${item.link}" target="_blank">${item.link}</a></td>
+                        <td>${item.category || category}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Scraping failed. See console for details.');
+            } finally {
+                scrapeBtn.textContent = 'Start Scraping';
+                scrapeBtn.disabled = false;
+            }
+        });
+        
+        // Export buttons
+        document.getElementById('export-json').addEventListener('click', async () => {
+            // Implement JSON export
+            alert('JSON export functionality will be implemented');
+        });
+        
+        document.getElementById('export-excel').addEventListener('click', async () => {
+            // Implement Excel export
+            alert('Excel export functionality will be implemented');
+        });
+        
+        document.getElementById('settings').addEventListener('click', () => {
+            // Open settings
+            alert('Settings will be implemented');
+        });
+    </script>
+</body>
+</html>
